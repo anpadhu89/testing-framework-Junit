@@ -1,0 +1,106 @@
+import java.util.HashMap;
+import junit.framework.TestCase;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
+public class JunitUtility extends TestCase {
+  HashMap<String, String> inputMap = new HashMap<String, String>();
+	HashMap<String, String> outputMap = new HashMap<String, String>();
+	String actualOutput;
+	String actualInput;
+
+	public void validateJsonObjects(JSONObject input,JSONObject output) throws JSONException{
+		Object rootInputJava = input;
+		Object rootOutputJava = output;
+		actualOutput = output.toString();
+		actualInput = input.toString();
+		arrayOrObject(rootInputJava,rootOutputJava);
+	}
+	
+	private void arrayOrObject(Object input,Object output) throws JSONException{
+		 if(input instanceof JSONArray){
+			 JSONArray inputArray = (JSONArray) input;
+			 JSONArray outputArray = (JSONArray) output;
+			 for(int i = 0; i < inputArray.length(); i++) {
+				 
+				 if(inputArray.get(0) instanceof JSONObject)
+				 {
+					 JSONObject inputJson = inputArray.getJSONObject(i);
+					 JSONObject outputJson = outputArray.getJSONObject(i);
+					 JSONArray inputArrayNames = inputJson.names();
+					 JSONArray outputArrayNames = outputJson.names();
+					 int X=0;
+					 if(inputArrayNames != null && outputArrayNames != null){
+						 if(inputArrayNames.length()<=outputArrayNames.length())
+							 X=outputArrayNames.length();
+						 else
+							 X=inputArrayNames.length();
+					 }
+					 iterateLoop(X,inputArrayNames,outputArrayNames,inputJson,outputJson);
+				 }
+			 }
+		 }
+	     else if(input instanceof JSONObject){
+	    	JSONObject inputJson = (JSONObject) input;
+	    	JSONObject outputJson = (JSONObject) output;
+	    	JSONArray inputArrayNames = inputJson.names();
+	    	JSONArray outputArrayNames = outputJson.names();
+	    	int X=0;
+	    	if(inputArrayNames != null && outputArrayNames != null){
+	    		if(inputArrayNames.length()<=outputArrayNames.length()){
+			    	 X=outputArrayNames.length();
+			     }
+			     else{
+			    	 X=inputArrayNames.length();
+			     }
+	    	}
+		     iterateLoop(X,inputArrayNames,outputArrayNames,inputJson,outputJson);
+	     }
+	  }
+	
+	private void iterateLoop(int X, JSONArray inputArrayNames,JSONArray outputArrayNames, JSONObject inputJson,JSONObject outputJson) throws JSONException {
+
+		for (int j = 0; j < X; j++) {
+			String inputTag = null;
+			String outputTag = null;
+			if (j >= inputArrayNames.length()) {
+				inputTag = "";
+				outputMap.put("", "");
+			} else
+				inputTag = inputArrayNames.getString(j);
+			if (j >= outputArrayNames.length())
+				outputTag = "";
+			else
+				outputTag = outputArrayNames.getString(j);
+			
+			inputMap.put(inputTag, inputTag);
+			outputMap.put(outputTag, outputTag);
+			System.out.println(inputTag);
+			System.out.println(outputTag);
+			if (!inputTag.equals(outputTag))
+			{
+				if (inputMap.containsKey(outputTag)) {
+					System.out.println("*"+outputTag+" PRESENT  *");
+					continue;
+				} else if (outputMap.containsKey(inputTag)) {
+					System.out.println(". "+inputTag+" PRESENT    .");
+					continue;
+				} else if (actualOutput.contains(inputTag)) {
+					System.out.println("~"+inputTag+" PRESENT    ~");
+					continue;
+				} else {
+					System.out.println("The element " + inputTag+ " is not present! JSON mismatch");
+					fail();
+				}
+			}
+			if (!inputTag.equals("")) {
+				Object jsonInputLevel2 = inputJson.get(inputTag);
+				Object jsonOutputLevel2 = outputJson.get(outputTag);
+				arrayOrObject(jsonInputLevel2, jsonOutputLevel2);
+			} else {
+				arrayOrObject("", "");
+			}
+		}
+	}
+}
