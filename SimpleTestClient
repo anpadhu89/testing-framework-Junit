@@ -1,0 +1,41 @@
+import java.io.IOException;
+import java.net.URISyntaxException;
+import javax.ws.rs.core.MediaType;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+
+public class SimpleTestClient {
+  
+	static Client CLIENT = Client.create();
+	static WebResource WEBRESOURCE = CLIENT.resource("http://archdemo02.exterro.net/fusion/zeta/rest/0"); 
+	
+	public static void main(String[] args) throws JSONException, IOException, URISyntaxException {
+		try{
+			JunitPropertyTest junitPropertyTest = new JunitPropertyTest();
+			
+			String requiredStrInput = "{\"startRow\": 1,\"noOfRows\": 100,\"coreName\": \"C3\",\"searchType\": \"snippetSearch\",\"searchRequestMap\": {\"query\": \"content:(wimax)\"}}";
+			JSONObject postInputData = new JSONObject(requiredStrInput);
+			JSONObject inputResponse = WEBRESOURCE.path("/index/search")
+											 .accept(MediaType.APPLICATION_JSON_TYPE)
+											 .type(MediaType.APPLICATION_JSON_TYPE)
+											 .post(JSONObject.class, postInputData);
+			
+			String actualStrOutput = "{\"startRow\": 1,\"noOfRows\": 100,\"coreName\": \"C3\",\"searchType\": \"snippetSearch\",\"searchRequestMap\": {\"query\": \"content:(wimax)\"}}";
+			JSONObject postOutputData = new JSONObject(actualStrOutput);
+			JSONObject response = WEBRESOURCE.path("/index/search")
+											 .accept(MediaType.APPLICATION_JSON_TYPE)
+											 .type(MediaType.APPLICATION_JSON_TYPE)
+											 .post(JSONObject.class, postOutputData);
+			
+			System.out.println(inputResponse.toString());
+			String responseInputString = inputResponse.toString();
+			System.out.println(response.toString());
+			String responseOutputString = response.toString();
+			junitPropertyTest.testCaseForGet(responseInputString,responseOutputString);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
