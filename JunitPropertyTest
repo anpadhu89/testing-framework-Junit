@@ -1,0 +1,31 @@
+public class JunitPropertyTest {
+
+  PropertyResourceTest resource;
+	JunitUtility utility = new JunitUtility();
+	HashMap<String, String> inputMap = new HashMap<String, String>();
+	HashMap<String, String> outputMap = new HashMap<String, String>();
+	
+	@AfterClass
+	public static void testafter(){
+		System.out.println("Exiting the test suite for property resource!");
+	}
+	
+	@BeforeClass
+	public static void testbefore(){
+		System.out.println("Entering the test suite for property resource!");
+	}
+	
+	@Test
+	public void testCaseForGet(String jsonStringInput, String jsonStringOutput) throws URISyntaxException, JSONException, IOException
+	{
+			System.out.println("Entering the test method for getPropertyByIdTest!");
+			JSONObject input  = new JSONObject(jsonStringInput);
+			JSONObject output = new JSONObject(jsonStringOutput);
+			utility.validateJsonObjects(input,output);
+			JsonParser parser = new JsonParser();
+			JsonElement o1 = parser.parse(jsonStringInput);
+			JsonElement o2 = parser.parse(jsonStringOutput);
+			assertEquals(o1, o2);
+	        System.out.println("Exiting the test method for getPropertyByIdTest!");
+	}
+}
