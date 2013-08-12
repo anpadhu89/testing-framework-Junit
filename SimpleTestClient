@@ -9,7 +9,7 @@ import com.sun.jersey.api.client.WebResource;
 public class SimpleTestClient {
   
 	static Client CLIENT = Client.create();
-	static WebResource WEBRESOURCE = CLIENT.resource("http://archdemo02.exterro.net/fusion/zeta/rest/0"); 
+	static WebResource WEBRESOURCE = CLIENT.resource("http://localhost:8080/rest/0"); 
 	
 	public static void main(String[] args) throws JSONException, IOException, URISyntaxException {
 		try{
